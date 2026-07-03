@@ -219,18 +219,126 @@ meaningfully different strategy from prompt-based or RAG-based methods.
 
 ---
 
-## Day 3 — *(to be added)*
+## Day 3 — Structured Reasoning in LLMs: Knowledge Graph-Infused Fine-Tuning, and a Proposal to Reduce Hallucinations
 
-**Task given:** 
+📄 [View full write-up](notes/structured-reasoning.docx)
 
-### What I studied
+*Based on: "Knowledge Graph-Infused Fine-Tuning for Structured Reasoning in 
+Large Language Models" (Zhang et al.)*
 
+### Objective
+To study how fine-tuning an LLM with injected knowledge graph information 
+improves structured reasoning, and to identify where this approach could be 
+extended specifically toward reducing hallucination — which the original 
+paper does not directly measure.
+
+### Problem Addressed by the Paper
+The paper identifies two core weaknesses in LLMs: **missing reasoning 
+chains** (the model can't logically connect separate facts) and **weak 
+entity-level understanding** (it doesn't deeply grasp what an entity is or 
+how it relates to others). Its claim is that injecting structured knowledge 
+graphs during fine-tuning addresses both.
+
+### Methodology (Original Paper)
+- A **Graph Neural Network (GCN/R-GCN)** encodes entities and relations from 
+  a KG into vector representations
+- A **gating mechanism** dynamically balances reliance on plain-text 
+  understanding versus structured graph knowledge
+- A **joint loss function** trains on the main task (e.g. QA) alongside an 
+  alignment objective keeping text and graph representations consistent
+- A **knowledge-aware attention mechanism** lets each word in context attend 
+  to related entities in the graph
+
+**Dataset used:** T-REx — a large-scale Wikipedia-derived KG dataset with 
+millions of entity-relation-entity triples aligned to natural language 
+sentences, filtered into smaller, semantically dense subgraphs for training.
+
+### Results (Original Paper)
+The proposed method outperformed three baselines (KGLM, DRAGON, KG-SFT) — 
+**86.4% QA accuracy**, **82.1% F1-score**, **29.7 BLEU**. A moderate learning 
+rate (1e-4) with high subgraph coverage (90%+) gave the most stable results.
+
+### What I Learned
+- A dataset for structured reasoning must contain *organized facts*, not 
+  just raw text
+- Knowledge graphs let an LLM "check" its reasoning against verified facts, 
+  instead of relying purely on learned language patterns
+- Fusing text and graph structure isn't trivial — it needs dedicated 
+  mechanisms (gating, joint loss); naively combining them doesn't work well
+- Learning rate and KG coverage both meaningfully affect stability and 
+  accuracy
+- **The key gap:** the paper only used one dataset (T-REx) and never tested 
+  hallucination directly — it measured task accuracy (QA-Acc, F1, BLEU), not 
+  factual reliability. This is the gap I'm proposing to address.
 
 ---
 
-## Current Focus — Structural Reasoning
+### My Research Focus: Structured Reasoning to Reduce Hallucination
 
-*(to be filled in once I document my understanding here)*
+Building on this paper, my own research angle redirects the framework 
+toward a different goal: not just "does the model perform the task well" 
+but **"does the model tell the truth, and can we measure that directly."**
+
+#### Datasets I'm Proposing to Use
+| Dataset | Role | Purpose |
+|---|---|---|
+| Wikidata5M | Knowledge source | Larger, cleaner replacement for T-REx |
+| FB15k-237 | Cross-check benchmark | Standard KG embedding benchmark for generalization |
+| HotpotQA | Multi-hop reasoning | Tests whether the model can chain multiple facts |
+| ComplexWebQuestions | Multi-hop reasoning | Multi-hop QA built specifically over KGs |
+| TruthfulQA | Hallucination test | Measures false-but-plausible answers |
+| HaluEval | Hallucination test | Benchmarks hallucination across QA, dialogue, summarization |
+| FEVER | Fact verification | Checks whether generated claims are evidence-supported |
+
+**Why more than one dataset is needed:** T-REx/Wikidata5M supply the 
+structured facts to reason over; HotpotQA/ComplexWebQuestions test multi-hop 
+chaining; TruthfulQA/HaluEval directly test truthfulness (missing from the 
+original paper, and the core of my motivation); FEVER adds an evidence 
+verification layer.
+
+#### Modifications I'm Proposing to the Original Method
+1. **Upgrade the knowledge source** — replace T-REx with Wikidata5M for 
+   larger, cleaner, more current coverage, keeping T-REx as a comparison 
+   baseline
+2. **Add a hallucination-specific evaluation stage** — introduce TruthfulQA 
+   and HaluEval, since the original paper never measures hallucination 
+   directly
+3. **Add a fact-verification loss term** — extend the joint loss 
+   (`L_total = L_task + λL_align`) with a FEVER-style verification term that 
+   penalizes unsupported claims
+4. **Test multi-hop reasoning explicitly** — use HotpotQA/ComplexWebQuestions 
+   to check whether the knowledge-aware attention mechanism can chain 
+   multiple facts, not just retrieve single ones
+5. **Report a hallucination rate metric** — alongside QA-Acc, F1, and BLEU, 
+   report the percentage of factually unsupported statements as a primary 
+   metric, since this most directly reflects my research motivation
+
+### Expected Outcome
+By combining a stronger knowledge graph (Wikidata5M), multi-hop reasoning 
+benchmarks (HotpotQA), and hallucination-specific evaluation (TruthfulQA, 
+HaluEval, FEVER), I expect to show that structured reasoning not only 
+improves task accuracy — as the original paper demonstrated — but also 
+measurably reduces hallucination rate, the gap the original work left 
+unaddressed.
+
+### Conclusion
+The original paper gave me a strong technical foundation for how knowledge 
+graphs are encoded, fused with language models, and jointly trained. My 
+contribution is to redirect this framework toward a specific, measurable 
+goal — reducing hallucination — by introducing hallucination-focused 
+datasets and an additional verification objective the original work did not 
+include.
+
+---
+
+## Current Focus — Structured Reasoning
+
+This is my active research direction, connecting directly back to Day 1 
+(Hallucination via Structured Knowledge Integration) and Day 2 (KG-Adapter's 
+parameter-efficient KG injection): I am now working toward proposing a 
+concrete extension — structured reasoning explicitly evaluated and optimized 
+for hallucination reduction, not just task accuracy — as detailed in Day 3 
+above.
 
 ---
 
