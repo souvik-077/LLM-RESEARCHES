@@ -114,14 +114,107 @@ offers a measurable, benchmarked path toward more trustworthy LLMs.
 
 ---
 
-## Day 2 — *(to be added)*
+## Day 2 — KG-Adapter: Enabling Knowledge Graph Integration in LLMs through Parameter-Efficient Fine-Tuning (PEFT)
 
-**Task given:** 
+📊 [View full Day 2 presentation slides](slides/kg-adapter.pptx)
 
-### What I studied
+### Objective
+To understand how Knowledge Graph knowledge can be integrated *into* an 
+LLM's internal layers — rather than only supplied externally through 
+prompts — using a lightweight, trainable adapter module.
 
+### The Problem
+Beyond hallucination, LLMs face several related limitations: limited domain 
+expertise, knowledge that goes stale without retraining, disagreement 
+between the model's internal memory and external facts, heavy dependence on 
+prompt quality, and poor explainability of *why* an answer was generated.
+
+Existing approaches each fall short in a different way:
+| Method | Approach | Key Problem |
+|---|---|---|
+| Traditional LLM | Uses only trained memory | Hallucinations, outdated knowledge |
+| Prompt Engineering | Injects KG facts into the prompt | Output quality depends entirely on prompt design |
+| RAG | Retrieves documents at inference | Ignores graph structure; no real reasoning over relations |
+| KG Prompting | Puts KG triples directly in the prompt | Prompt becomes too long; still prompt-dependent |
+| Full Fine-Tuning | Retrains the entire model on KG data | Extremely expensive; risks forgetting prior knowledge |
+
+### Methodology
+
+**Core idea:** instead of placing KG facts inside the prompt text, 
+KG-Adapter attaches a small trainable module directly inside the frozen LLM. 
+The pipeline is: *Knowledge Graph → Graph Encoder (GNN-based) → KG Adapter 
+(lightweight, trainable) → LLM Decoder (frozen) → Generated Response.*
+
+Two complementary encoding strategies make this work:
+- **Node-centered encoding** — each entity in the KG (a person, place, 
+  concept) is converted into a vector representation that the adapter can 
+  use
+- **Relation-centered encoding** — the *edges* between entities (e.g. 
+  "Harrier → has temperament → Friendly") are encoded separately and 
+  combined with node vectors, since knowing an entity alone is incomplete 
+  without knowing how it relates to others
+
+This is a direct application of **Parameter-Efficient Fine-Tuning (PEFT)**: 
+rather than updating all of a model's weights (expensive, memory-heavy, and 
+prone to catastrophic forgetting), only the small adapter module is trained 
+while the base LLM stays frozen. In practice, this meant training only 
+**28 million parameters out of a 7-billion-parameter model — just 0.4% of 
+the total.**
+
+### Experimental Setup
+- **Base models tested:** LLaMA (7B), Vicuna (7B), ChatGLM
+- **Benchmarks:** WebQSP, CWQ (Complex Web Questions), GrailQA
+- **Tasks:** Knowledge Graph QA, entity linking, relation reasoning
+- **Metrics:** F1 Score, Hits@1, Accuracy, Exact Match
+
+### Results
+KG-Adapter outperformed all baseline methods across the KGQA benchmarks 
+while training only ~0.4% of total model parameters — showing that 
+*learning* structured knowledge through a graph encoder is more effective 
+than simply *retrieving* it via prompts or RAG.
+
+### My Assessment — Limitations
+Reading critically, I noted several open issues:
+- Performance depends entirely on the **quality of the input KG** — errors 
+  or gaps in the graph propagate directly into model output
+- The adapter has no mechanism to **correct wrong KG data**; it learns 
+  whatever the graph contains, including its errors
+- Building a good domain-specific KG is itself **expensive and 
+  expert-intensive**
+- Adapter performance is still **bounded by the base LLM's own capability**
+- **Real-time KG updates are difficult** — dynamic changes require 
+  re-training or re-initializing the adapter
+- Evaluation so far is mostly limited to **KGQA-style tasks**, not the full 
+  diversity of real-world NLP use cases
+
+### My Suggestions for Future Improvement
+1. Automatic KG updating as new facts emerge
+2. Confidence scoring before the model commits to an answer
+3. Multi-KG support — integrating multiple domain graphs at once
+4. Adaptive adapter selection per domain or query type
+5. Visual explanation of the graph reasoning path behind an answer
+6. Self-correction — re-verifying the answer against the KG post-generation
+7. Ranking KG facts by source trustworthiness
+8. Reasoning-path memory — reusing successful inference paths across queries
 
 ### Conclusion
+Traditional LLMs rely mostly on learned memory, which drives hallucination 
+and factual drift. KG-Adapter offers a more structural fix: injecting 
+knowledge directly into model internals via a lightweight, PEFT-trained 
+module, achieving strong accuracy gains at a fraction of the training cost 
+of full fine-tuning. The key distinction from Day 1's approaches is that 
+**KG-Adapter learns knowledge, rather than just retrieving it** — a 
+meaningfully different strategy from prompt-based or RAG-based methods.
+
+### What I Personally Took Away
+- The distinction between adding knowledge *outside* the model (prompting) 
+  versus *inside* it (adapters)
+- How Graph Neural Networks (GNNs) are used to turn graph structure into 
+  vectors usable by a language model
+- Why lightweight fine-tuning (PEFT) matters for making serious LLM research 
+  feasible without massive GPU infrastructure
+- How to read a research paper critically: identifying not just what it 
+  claims, but its limitations and what I would improve
 
 
 ---
