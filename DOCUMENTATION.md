@@ -25,6 +25,8 @@ problem. This log documents my own study path through these topics.
 
 ## Day 1 — Reducing LLM Hallucinations via Structured Knowledge Integration
 
+📊 [View full Day 1 presentation slides](slides/LLM_hallucination.pptx)
+
 ### Objective
 To understand the root causes of hallucination in LLMs and evaluate how 
 Knowledge Graphs and neuro-symbolic AI approaches address them — with a 
