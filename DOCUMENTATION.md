@@ -18,14 +18,12 @@ This raised a natural question: how do these models actually work under the
 hood, and what real architectural gaps cause hallucination? Sir outlined the 
 scope for research in this space and provided initial resources covering 
 **Knowledge Graphs (KG)**, **Meta-Knowledge Graphs (MKG)**, **GraphRAG**, 
-**KG-Adapters**, and **Structured Reasoning** as active approaches to this 
+**KG-Adapters**, and **Structural Reasoning** as active approaches to this 
 problem. This log documents my own study path through these topics.
 
 ---
 
 ## Day 1 — Reducing LLM Hallucinations via Structured Knowledge Integration
-
-📊 [View full Day 1 presentation slides](slides/LLM_hallucination.pptx)
 
 ### Objective
 To understand the root causes of hallucination in LLMs and evaluate how 
@@ -330,6 +328,325 @@ contribution is to redirect this framework toward a specific, measurable
 goal — reducing hallucination — by introducing hallucination-focused 
 datasets and an additional verification objective the original work did not 
 include.
+
+---
+
+## Day 4 — Understanding the Benchmark Datasets Used in LLM/KG Research
+
+**Task given:** Analyze and understand the benchmark datasets referenced 
+across the papers studied so far — how each is constructed, its working 
+principle, its statistics, and its original source — and record the source 
+link for each dataset.
+
+This entry documents each dataset independently, in my own understanding, 
+with the original paper cited as the source of truth.
+
+---
+
+### 1. HotpotQA
+**Task type:** Multi-hop Question Answering
+
+**Source:** Yang et al., *"HotpotQA: A Dataset for Diverse, Explainable 
+Multi-hop Question Answering,"* EMNLP 2018 — 
+[ACL Anthology](https://aclanthology.org/D18-1259/) | 
+[arXiv](https://arxiv.org/abs/1809.09600)
+
+**Construction:** Crowdworkers were shown pairs of related Wikipedia 
+articles and asked to write questions that genuinely require information 
+from *both* to answer, rather than being answerable from either one alone. 
+This produced roughly 113,000 question-answer pairs.
+
+**Working principle:** Each question requires reading and reasoning over 
+multiple supporting documents rather than a single passage. What makes it 
+distinctive is that it also provides **sentence-level supporting facts** for 
+every answer — so a model isn't just scored on the final answer, but can be 
+evaluated on *whether it retrieved the correct evidence* to reach it. It 
+also contains "comparison" questions (e.g., comparing two entities' 
+attributes), testing a reasoning skill distinct from plain fact chaining.
+
+**Known limitation:** Later research (see 2WikiMultiHopQA below) found that 
+a meaningful fraction of HotpotQA's "multi-hop" questions can be answered 
+via shortcuts — surface-level cues — without a model actually performing 
+multi-hop reasoning.
+
+**Why it matters for our research:** It directly tests whether a model can 
+chain together separate pieces of information — the core capacity that 
+"structured reasoning" approaches (Days 1–3) are trying to strengthen.
+
+---
+
+### 2. 2WikiMultiHopQA
+**Task type:** Multi-hop Question Answering with explicit reasoning paths
+
+**Source:** Ho et al., *"Constructing A Multi-hop QA Dataset for 
+Comprehensive Evaluation of Reasoning Steps,"* COLING 2020 — 
+[ACL Anthology](https://aclanthology.org/2020.coling-main.580/) | 
+[arXiv](https://arxiv.org/abs/2011.01060)
+
+**Construction:** Built by combining structured data from **Wikidata** with 
+unstructured **Wikipedia** text, specifically to correct a flaw the authors 
+identified in earlier multi-hop datasets: many "multi-hop" questions could 
+secretly be answered without doing multi-hop reasoning at all.
+
+**Working principle:** Every question is paired with an explicit 
+**evidence/reasoning path** — the exact chain of facts required to reach the 
+answer — so a model's intermediate reasoning steps, not just its final 
+answer, can be verified. This closes the shortcut-answering gap left open 
+by HotpotQA.
+
+**Why it matters:** It's a stricter, more reliable benchmark for confirming 
+that a model is *actually* reasoning step-by-step, rather than pattern 
+matching to a shortcut — directly relevant to validating multi-hop claims 
+made in Day 1's frameworks.
+
+---
+
+### 3. ComplexWebQuestions (CWQ)
+**Task type:** Complex, compositional Question Answering over the web/KB
+
+**Source:** Talmor & Berant, *"The Web as a Knowledge-Base for Answering 
+Complex Questions,"* NAACL 2018 — 
+[ACL Anthology](https://aclanthology.org/N18-1059/) | 
+[arXiv](https://arxiv.org/abs/1803.06643)
+
+**Construction:** Built on top of an existing KBQA dataset by algorithmically 
+combining simple questions using logical/compositional operations 
+(conjunctions, superlatives, comparisons), then having crowdworkers rephrase 
+them into natural, fluent questions.
+
+**Working principle:** The authors' key idea is that a complex question can 
+often be **decomposed into a sequence of simpler questions**, each 
+answerable independently, with the final answer computed by chaining the 
+results together. Their experiments showed this decomposition strategy 
+improved precision@1 from 20.8% (answering the question directly) to 27.5% 
+— a meaningful gain from breaking the question apart rather than treating 
+it as one opaque query.
+
+**Why it matters:** It's a strong benchmark for testing whether structured 
+or KG-based methods can break down compositional reasoning the way this 
+decomposition strategy does — relevant to evaluating both KG-Adapter (Day 2) 
+and structured reasoning approaches (Day 3).
+
+---
+
+### 4. WebQuestionsSP (WebQSP)
+**Task type:** Knowledge Base Question Answering (KBQA)
+
+**Source:** Yih et al., *"The Value of Semantic Parse Labeling for 
+Knowledge Base Question Answering,"* ACL 2016 — 
+[ACL Anthology](https://aclanthology.org/P16-2033/)
+
+**Construction:** Extends the earlier **WebQuestions** dataset (questions 
+originally collected via the Google Suggest API and answered by crowdworkers, 
+Berant et al. 2013) by having annotators write full **semantic parses** — 
+structured SPARQL queries — for each question, grounded against the 
+**Freebase** knowledge base. This resulted in 4,737 fully-annotated 
+questions, split roughly 3,098 for training and 1,639 for testing.
+
+**Working principle:** Because each question has a gold-standard structured 
+query attached, models can be trained and evaluated not just on whether 
+they produce the right final answer, but on whether they correctly parse 
+natural language into a structured KB query. The original paper found this 
+extra annotation effort paid off directly: adding semantic parse labels 
+improved a state-of-the-art KBQA system's F1 score by a full 5 points.
+
+**Why it matters:** It's one of the standard benchmarks used to evaluate 
+KG-Adapter-style methods (Day 2), since it directly tests grounding language 
+into structured KB queries — exactly the mechanism KG-Adapter is designed 
+to perform.
+
+---
+
+### 5. GrailQA
+**Task type:** Knowledge Base Question Answering — generalization testing
+
+**Source:** Gu et al., *"Beyond I.I.D.: Three Levels of Generalization for 
+Question Answering on Knowledge Bases,"* WWW/TheWebConf 2021 — 
+[arXiv](https://arxiv.org/abs/2011.07743)
+
+**Construction:** Contains 64,331 questions spanning 3,720 relations, 1,442 
+entity types, and 86 domains from Freebase — deliberately built to be far 
+broader in domain coverage than prior KBQA datasets.
+
+**Working principle:** The authors argue that standard "train and test on 
+similar data" (i.i.d.) evaluation is misleading for KBQA, since real-world 
+questions can never be fully anticipated in advance. GrailQA instead 
+evaluates models at **three explicit levels of generalization**: i.i.d. 
+(similar to training data), compositional (new combinations of known 
+elements), and zero-shot (entirely unseen relations/entity types).
+
+**Why it matters:** This is a much harder and more realistic test of 
+whether a KG-integrated model (like KG-Adapter, Day 2) genuinely 
+generalizes, rather than memorizing surface patterns from its training 
+distribution.
+
+---
+
+### 6. MetaQA
+**Task type:** Multi-hop KBQA with noisy/paraphrased questions
+
+**Source:** Zhang et al., *"Variational Reasoning for Question Answering 
+with Knowledge Graph,"* AAAI 2018 — [arXiv](https://arxiv.org/abs/1709.04071)
+
+**Construction:** Built over a movie-domain knowledge graph (extending the 
+WikiMovies dataset), with over 400,000 questions spanning 1-, 2-, and 3-hop 
+reasoning, plus paraphrased text variants and, in some released versions, 
+spoken/audio question variants — deliberately introducing the kind of noise 
+real users produce.
+
+**Working principle:** MetaQA addresses two practical problems 
+simultaneously: (1) real user questions contain typos, rephrasing, and 
+pronunciation variation, which makes entity matching against the KG hard, 
+and (2) many of those same questions require multi-hop reasoning to answer. 
+The authors propose a variational deep learning approach that handles noisy 
+input while learning multi-hop reasoning at the same time.
+
+**Why it matters:** It highlights a real-world constraint often missed in 
+clean academic benchmarks — that a research method also needs to be robust 
+to imperfect, noisy user input, not just clean textbook-style questions.
+
+---
+
+### 7. T-REx
+**Task type:** Knowledge Graph ↔ Natural Language alignment resource (not QA)
+
+**Source:** Elsahar et al., *"T-REx: A Large Scale Alignment of Natural 
+Language with Knowledge Base Triples,"* LREC 2018 — 
+[ACL Anthology](https://aclanthology.org/L18-1544/)
+
+**Construction:** Built by automatically aligning Wikipedia abstracts with 
+Wikidata knowledge base triples using a combination of rule-based and deep 
+learning alignment techniques. The final resource contains exactly 11 
+million triples aligned to 3.09 million Wikipedia abstracts (6.2 million 
+sentences) — at the time of publication, two orders of magnitude larger 
+than any prior alignment dataset.
+
+**Working principle:** Unlike the QA datasets above, T-REx is **training 
+infrastructure**: it doesn't test a model's answer, it *teaches* a model the 
+correspondence between free-form language and structured facts. This is the 
+dataset used in the Day 3 paper (Zhang et al.) as the training source for 
+knowledge-graph-infused fine-tuning.
+
+**Why it matters:** It's foundational — this is exactly the kind of 
+resource needed to teach a model how free text maps onto structured graph 
+facts, which underpins the Structured Reasoning approach in Day 3.
+
+---
+
+### 8. FEVER
+**Task type:** Fact Extraction and Verification
+
+**Source:** Thorne et al., *"FEVER: a Large-scale Dataset for Fact 
+Extraction and Verification,"* NAACL 2018 — 
+[ACL Anthology](https://aclanthology.org/N18-1074/) | 
+[arXiv](https://arxiv.org/abs/1803.05355)
+
+**Construction:** Annotators generated over 185,000 claims by altering 
+sentences taken from Wikipedia, then a separate, independent group of 
+annotators verified each claim against Wikipedia evidence **without** 
+knowledge of which sentence the claim originally came from — reducing bias 
+in the labeling process.
+
+**Working principle:** Each claim is labeled **Supported**, **Refuted**, or 
+**NotEnoughInfo**, with the exact supporting or refuting evidence 
+sentence(s) recorded alongside it. Notably, the original paper found this 
+task genuinely difficult — even when given the correct evidence, their best 
+full pipeline reached only **31.87% accuracy**, and dropped further, to 
+50.91%, if evidence was ignored entirely — showing that fact verification 
+against text is far from a solved problem.
+
+**Why it matters:** This is the dataset behind the fact-verification loss 
+term I'm proposing in Day 3 — it's specifically built to test whether a 
+claim is actually supported by evidence, which is precisely the gap in 
+hallucination measurement I'm trying to close.
+
+---
+
+### 9. TruthfulQA
+**Task type:** Truthfulness / Hallucination benchmark
+
+**Source:** Lin et al., *"TruthfulQA: Measuring How Models Mimic Human 
+Falsehoods,"* ACL 2022 — 
+[ACL Anthology](https://aclanthology.org/2022.acl-long.229/) | 
+[arXiv](https://arxiv.org/abs/2109.07958)
+
+**Construction:** The authors deliberately crafted 817 questions across 38 
+categories (health, law, finance, politics, conspiracy theories, etc.), 
+specifically targeting topics where a model that simply imitates common 
+human text is likely to reproduce a popular **misconception** rather than 
+the truth.
+
+**Working principle:** Models are scored on whether their answers are 
+truthful, using either human evaluation or a fine-tuned "truth classifier" 
+model. The paper's most striking finding: their best model was truthful 
+only about 58% of the time, compared to roughly 94% for human performance — 
+and, notably, **larger models tended to be *less* truthful**. As a concrete 
+example from the paper, the 6-billion-parameter GPT-J model was **17% less 
+truthful** than its own much smaller 125-million-parameter counterpart, 
+since bigger models are better at fluently reproducing convincing-sounding 
+misconceptions absorbed from their training data.
+
+**Why it matters:** This result is central to my own research motivation — 
+it's direct empirical evidence that scaling model size alone does not fix 
+hallucination, which is exactly why structural/architectural interventions 
+(Days 1–3), rather than scale alone, are necessary.
+
+---
+
+### Cross-Dataset Analysis
+
+Looking at all nine datasets together, I noticed they fall into three 
+distinct functional categories, which matters for how I plan to use them:
+
+1. **Training/alignment resources** (T-REx) — teach a model the 
+   correspondence between text and structured facts; used *during* training, 
+   not for evaluation.
+2. **Reasoning benchmarks** (HotpotQA, 2WikiMultiHopQA, ComplexWebQuestions, 
+   WebQuestionsSP, GrailQA, MetaQA) — test whether a model can correctly 
+   retrieve and chain facts, with increasing levels of strictness (from 
+   HotpotQA's basic multi-hop check, up to GrailQA's zero-shot 
+   generalization test).
+3. **Truthfulness/verification benchmarks** (TruthfulQA, FEVER) — test 
+   whether a model's output is actually *true*, independent of whether the 
+   reasoning steps look correct. This category is the one the original Day 3 
+   paper (Zhang et al.) never used, and is the specific gap my research 
+   proposal targets.
+
+I also noticed a pattern across the reasoning benchmarks: several of them 
+(2WikiMultiHopQA, GrailQA) exist *specifically* because earlier datasets 
+(HotpotQA, standard KBQA sets) had hidden weaknesses — shortcut-answerable 
+questions, or i.i.d. train/test bias — that made reported results look 
+better than the models' true reasoning ability. This tells me benchmark 
+design itself is an active, evolving research problem, not a fixed, settled 
+foundation.
+
+### Summary Table
+
+| Dataset | Type | Size (verified) | Primary Use in My Research |
+|---|---|---|---|
+| HotpotQA | Multi-hop QA | 113,000 QA pairs | Multi-hop reasoning evaluation |
+| 2WikiMultiHopQA | Multi-hop QA + reasoning path | ~192,600 examples | Verifying genuine reasoning, not shortcuts |
+| ComplexWebQuestions | Compositional QA | — | Testing question decomposition (20.8%→27.5% precision@1) |
+| WebQuestionsSP | KBQA (Freebase) | 4,737 questions | Semantic parsing benchmark |
+| GrailQA | KBQA generalization | 64,331 questions | i.i.d./compositional/zero-shot generalization |
+| MetaQA | Multi-hop KBQA (noisy) | 400,000+ questions | Robustness to real-world noisy input |
+| T-REx | KG–text alignment | 11M triples / 3.09M abstracts | Training data for KG-infused fine-tuning |
+| FEVER | Fact verification | 185,445 claims | Fact-verification loss term (my proposal) |
+| TruthfulQA | Truthfulness benchmark | 817 questions, 38 categories | Core hallucination-rate evaluation |
+
+### What I Learned
+- Not all "datasets" serve the same purpose — some are **training resources** 
+  (T-REx), some are **reasoning benchmarks** (HotpotQA, 2WikiMultiHopQA), and 
+  some are **evaluation-only truthfulness tests** (TruthfulQA, FEVER). 
+  Conflating these categories would make a research design incoherent.
+- Benchmark design itself is an active research problem — GrailQA and 
+  2WikiMultiHopQA both exist specifically because earlier datasets had 
+  hidden flaws (shortcut answers, i.i.d. assumptions) that made results look 
+  better than they really were.
+- The TruthfulQA finding that larger models can be *less* truthful is a 
+  particularly important piece of evidence for my research direction: it 
+  justifies why my proposal focuses on structural fixes rather than assuming 
+  scale will eventually solve hallucination on its own.
 
 ---
 
