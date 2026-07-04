@@ -4,11 +4,11 @@
 
 **Research Area:** Large Language Models (LLMs)
 
-**Personal Focus:** Hallucination Mitigation via Structured Knowledge Integration → Structural Reasoning
+**Personal Focus:** Hallucination Mitigation via Structured Knowledge Integration → Structured Reasoning
 
 ---
 
-## Background
+## Day 0 — Background
 
 I started this research with no prior background in LLMs, beyond general 
 awareness of tools like ChatGPT. During JAVA Lab sessions, Dinesh Sir 
@@ -114,6 +114,14 @@ offers a measurable, benchmarked path toward more trustworthy LLMs.
 - Multi-modal KG integration (text + images)
 - Real-time KG updates via streaming pipelines
 
+### My Personal Reflection
+This was a lot to take in at first. The idea that hallucination isn't just 
+a "bug" but something built into how these models work was new to me, and 
+it made the topic feel less scary — like it's actually something people are 
+working on fixing, not just a random flaw. The MKG framework took me a 
+couple of reads to properly understand, especially telling the Assessor and 
+Insight Processor apart.
+
 ---
 
 ## Day 2 — KG-Adapter: Enabling Knowledge Graph Integration in LLMs through Parameter-Efficient Fine-Tuning (PEFT)
@@ -217,6 +225,12 @@ meaningfully different strategy from prompt-based or RAG-based methods.
   feasible without massive GPU infrastructure
 - How to read a research paper critically: identifying not just what it 
   claims, but its limitations and what I would improve
+
+### My Personal Reflection
+This one was tougher than Day 1. The gating mechanism and PEFT part needed 
+a couple of re-reads before it made sense to me. The "0.4% of parameters" 
+number helped a lot — once I had that, the whole "lightweight adapter" idea 
+stopped feeling so abstract.
 
 
 ---
@@ -331,6 +345,12 @@ goal — reducing hallucination — by introducing hallucination-focused
 datasets and an additional verification objective the original work did not 
 include.
 
+### My Personal Reflection
+This felt different from the other days — instead of just summarizing a 
+paper, I noticed a real gap (it never actually tested hallucination) and 
+came up with my own way to fix it. It's still just a proposal, not tested, 
+but it feels more like my own work than the earlier days.
+
 ---
 
 ## Day 4 — Understanding the Benchmark Datasets Used in LLM/KG Research
@@ -347,7 +367,6 @@ with the original paper cited as the source of truth.
 
 ### 1. HotpotQA
 **Task type:** Multi-hop Question Answering
-
 **Source:** Yang et al., *"HotpotQA: A Dataset for Diverse, Explainable 
 Multi-hop Question Answering,"* EMNLP 2018 — 
 [ACL Anthology](https://aclanthology.org/D18-1259/) | 
@@ -379,7 +398,6 @@ chain together separate pieces of information — the core capacity that
 
 ### 2. 2WikiMultiHopQA
 **Task type:** Multi-hop Question Answering with explicit reasoning paths
-
 **Source:** Ho et al., *"Constructing A Multi-hop QA Dataset for 
 Comprehensive Evaluation of Reasoning Steps,"* COLING 2020 — 
 [ACL Anthology](https://aclanthology.org/2020.coling-main.580/) | 
@@ -405,7 +423,6 @@ made in Day 1's frameworks.
 
 ### 3. ComplexWebQuestions (CWQ)
 **Task type:** Complex, compositional Question Answering over the web/KB
-
 **Source:** Talmor & Berant, *"The Web as a Knowledge-Base for Answering 
 Complex Questions,"* NAACL 2018 — 
 [ACL Anthology](https://aclanthology.org/N18-1059/) | 
@@ -433,7 +450,6 @@ and structured reasoning approaches (Day 3).
 
 ### 4. WebQuestionsSP (WebQSP)
 **Task type:** Knowledge Base Question Answering (KBQA)
-
 **Source:** Yih et al., *"The Value of Semantic Parse Labeling for 
 Knowledge Base Question Answering,"* ACL 2016 — 
 [ACL Anthology](https://aclanthology.org/P16-2033/)
@@ -461,7 +477,6 @@ to perform.
 
 ### 5. GrailQA
 **Task type:** Knowledge Base Question Answering — generalization testing
-
 **Source:** Gu et al., *"Beyond I.I.D.: Three Levels of Generalization for 
 Question Answering on Knowledge Bases,"* WWW/TheWebConf 2021 — 
 [arXiv](https://arxiv.org/abs/2011.07743)
@@ -486,7 +501,6 @@ distribution.
 
 ### 6. MetaQA
 **Task type:** Multi-hop KBQA with noisy/paraphrased questions
-
 **Source:** Zhang et al., *"Variational Reasoning for Question Answering 
 with Knowledge Graph,"* AAAI 2018 — [arXiv](https://arxiv.org/abs/1709.04071)
 
@@ -511,7 +525,6 @@ to imperfect, noisy user input, not just clean textbook-style questions.
 
 ### 7. T-REx
 **Task type:** Knowledge Graph ↔ Natural Language alignment resource (not QA)
-
 **Source:** Elsahar et al., *"T-REx: A Large Scale Alignment of Natural 
 Language with Knowledge Base Triples,"* LREC 2018 — 
 [ACL Anthology](https://aclanthology.org/L18-1544/)
@@ -537,7 +550,6 @@ facts, which underpins the Structured Reasoning approach in Day 3.
 
 ### 8. FEVER
 **Task type:** Fact Extraction and Verification
-
 **Source:** Thorne et al., *"FEVER: a Large-scale Dataset for Fact 
 Extraction and Verification,"* NAACL 2018 — 
 [ACL Anthology](https://aclanthology.org/N18-1074/) | 
@@ -566,7 +578,6 @@ hallucination measurement I'm trying to close.
 
 ### 9. TruthfulQA
 **Task type:** Truthfulness / Hallucination benchmark
-
 **Source:** Lin et al., *"TruthfulQA: Measuring How Models Mimic Human 
 Falsehoods,"* ACL 2022 — 
 [ACL Anthology](https://aclanthology.org/2022.acl-long.229/) | 
@@ -649,6 +660,13 @@ foundation.
   particularly important piece of evidence for my research direction: it 
   justifies why my proposal focuses on structural fixes rather than assuming 
   scale will eventually solve hallucination on its own.
+
+### My Personal Reflection
+Going through nine datasets in one sitting was a lot, but it helped me see 
+how they connect — like some datasets were made just to fix problems in 
+older ones. I also went back and checked my numbers against the real papers 
+instead of trusting my first draft, and found a couple I'd gotten slightly 
+wrong.
 
 ---
 
