@@ -1,7 +1,9 @@
 # LLM Research Log — Souvik
 
 **Mentor:** Dinesh Sir
+
 **Research Area:** Large Language Models (LLMs)
+
 **Personal Focus:** Hallucination Mitigation via Structured Knowledge Integration → Structural Reasoning
 
 ---
@@ -18,7 +20,7 @@ This raised a natural question: how do these models actually work under the
 hood, and what real architectural gaps cause hallucination? Sir outlined the 
 scope for research in this space and provided initial resources covering 
 **Knowledge Graphs (KG)**, **Meta-Knowledge Graphs (MKG)**, **GraphRAG**, 
-**KG-Adapters**, and **Structural Reasoning** as active approaches to this 
+**KG-Adapters**, and **Structured Reasoning** as active approaches to this 
 problem. This log documents my own study path through these topics.
 
 ---
