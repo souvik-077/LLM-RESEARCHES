@@ -20,8 +20,8 @@ research path — the papers I study, the tasks assigned by my mentor, and
 the original research direction I'm building toward.
 
 Every entry follows the same structure: **Objective → Methodology → 
-Results → Conclusion → My Own Analysis**, so the reasoning behind each step 
-is traceable, not just the conclusions.
+Results → Conclusion → Personal Reflection**, so the reasoning behind each 
+step is traceable, not just the conclusions.
 
 ---
 
@@ -38,9 +38,11 @@ is traceable, not just the conclusions.
 
 | Day | Topic | Core Idea |
 |---|---|---|
+| **Day 0** | Background | How this research started — mentor-guided introduction to LLMs and hallucination |
 | **Day 1** | LLM Hallucination & Structured Knowledge Integration | Injecting Knowledge Graphs + self-verification loops to fix hallucination at the architecture level |
 | **Day 2** | KG-Adapter (PEFT) | Learning KG knowledge *inside* the model via lightweight adapters, instead of retrieving it externally |
 | **Day 3** | Structured Reasoning | Extending KG-infused fine-tuning with hallucination-focused datasets and a verification loss term |
+| **Day 4** | Benchmark Datasets | Understanding the 9 datasets behind this research — construction, purpose, and source |
 
 📄 **Full write-ups:** [`DOCUMENTATION.md`](DOCUMENTATION.md)
 
@@ -68,9 +70,11 @@ is traceable, not just the conclusions.
 </td></tr>
 <tr><td width="50%" valign="top">
 
-**Evaluation**
-- TruthfulQA, HaluEval, FEVER
-- Multi-Hop Benchmarks: HotpotQA, ComplexWebQuestions, GrailQA
+**Evaluation & Datasets**
+- TruthfulQA, FEVER, HaluEval
+- Multi-Hop Benchmarks: HotpotQA, 2WikiMultiHopQA, ComplexWebQuestions
+- KBQA Benchmarks: WebQuestionsSP, GrailQA, MetaQA
+- KG–Text Alignment: T-REx
 
 </td><td width="50%" valign="top">
 
@@ -89,7 +93,7 @@ is traceable, not just the conclusions.
 ```
 LLM-RESEARCHES/
 ├── README.md              ← you are here
-├── DOCUMENTATION.md        ← full day-by-day research log
+├── DOCUMENTATION.md        ← full day-by-day research log (Day 0-4)
 ├── slides/                 ← presentation decks
 │   ├── LLM_hallucination.pptx
 │   └── kg-adapter.pptx
