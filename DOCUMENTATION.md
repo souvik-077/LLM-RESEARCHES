@@ -115,12 +115,13 @@ offers a measurable, benchmarked path toward more trustworthy LLMs.
 - Real-time KG updates via streaming pipelines
 
 ### My Personal Reflection
-This was a lot to take in at first. The idea that hallucination isn't just 
-a "bug" but something built into how these models work was new to me, and 
-it made the topic feel less scary — like it's actually something people are 
-working on fixing, not just a random flaw. The MKG framework took me a 
-couple of reads to properly understand, especially telling the Assessor and 
-Insight Processor apart.
+This was our very first day on this research. I didn't know anything about 
+this topic before — Dinesh Sir told us all the basic things about LLMs, and 
+the future scope of this field, what I could work on and what I had to do 
+next. Later Sir gave us resources to study. On this first day I learned the 
+basics of what LLM, KG, and MKG actually are. At first it looked complex, 
+but after going through it properly, I got interested in it, and that's 
+when I started focusing more seriously on the research questions.
 
 ---
 
@@ -227,10 +228,12 @@ meaningfully different strategy from prompt-based or RAG-based methods.
   claims, but its limitations and what I would improve
 
 ### My Personal Reflection
-This one was tougher than Day 1. The gating mechanism and PEFT part needed 
-a couple of re-reads before it made sense to me. The "0.4% of parameters" 
-number helped a lot — once I had that, the whole "lightweight adapter" idea 
-stopped feeling so abstract.
+For Day 2, Sir gave us resources related to KG-Adapter, PEFT, GNN, and a few 
+other topics. After going through the research paper, it looked quite 
+complex, so I used ChatGPT to help make sense of the harder parts. But 
+later, when I discussed it with Dinesh Sir, I realized that ChatGPT can also 
+give wrong answers sometimes. That was an important lesson I learned that 
+day — not to blindly trust an AI's explanation without cross-checking it.
 
 
 ---
@@ -346,8 +349,8 @@ datasets and an additional verification objective the original work did not
 include.
 
 ### My Personal Reflection
-This felt different from the other days — instead of just summarizing a 
-paper, I noticed a real gap (it never actually tested hallucination) and 
+This day felt different from the other days. Instead of just summarizing a 
+paper, I noticed a real gap — it never actually tested hallucination — and 
 came up with my own way to fix it. It's still just a proposal, not tested, 
 but it feels more like my own work than the earlier days.
 
@@ -664,9 +667,8 @@ foundation.
 ### My Personal Reflection
 Going through nine datasets in one sitting was a lot, but it helped me see 
 how they connect — like some datasets were made just to fix problems in 
-older ones. I also went back and checked my numbers against the real papers 
-instead of trusting my first draft, and found a couple I'd gotten slightly 
-wrong.
+older ones. There's a lot to know about this, and I'm still learning how 
+all the pieces fit together.
 
 ---
 
