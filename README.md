@@ -86,15 +86,3 @@ step is traceable, not just the conclusions.
 </table>
 
 ```
-
----
-
-## 🚀 Start Here
-
-👉 **[Read the full research log →](https://github.com/souvik-077/LLM-RESEARCHES/blob/main/DOCUMENTATION.md)**
-
----
-
-<div align="center">
-<sub>Maintained by <a href="https://github.com/souvik-077">souvik-077</a> · Mentored by Dinesh Sir</sub>
-</div>
