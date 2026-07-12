@@ -44,7 +44,6 @@ step is traceable, not just the conclusions.
 | **Day 3** | Structured Reasoning | Extending KG-infused fine-tuning with hallucination-focused datasets and a verification loss term |
 | **Day 4** | Benchmark Datasets | Understanding the 9 datasets behind this research — construction, purpose, and source |
 
-📄 **Full write-ups:** [`DOCUMENTATION.md`](DOCUMENTATION.md)
 
 ---
 
@@ -86,19 +85,6 @@ step is traceable, not just the conclusions.
 </td></tr>
 </table>
 
----
-
-## 📂 Repository Structure
-
-```
-LLM-RESEARCHES/
-├── README.md              ← you are here
-├── DOCUMENTATION.md        ← full day-by-day research log (Day 0-4)
-├── slides/                 ← presentation decks
-│   ├── LLM_hallucination.pptx
-│   └── kg-adapter.pptx
-└── notes/                  ← detailed write-ups & proposals
-    └── structured-reasoning.docx
 ```
 
 ---
